@@ -1,107 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:overlay_support/overlay_support.dart';
 
-void main() {
-  runApp(MyApp());
+import 'features/authentication/pages/create_account_screen.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey:
+      "AIzaSyCpbL9l2qDfELlCY_2LMsgUuqKvT1q70mo",
+      appId:
+      "1:897035289106:android:4068419aa5d4b5f5e40ecb",
+      messagingSenderId: "897035289106",
+      projectId:"event-planner-8a49d",
+    ),
+  );
+  runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: AccountCreationForm(),
-        ),
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      //Overlay support to allow display of notifications easily
+      builder: (context, child) => OverlaySupport.global(
+        child: MaterialApp(debugShowCheckedModeBanner: false,
+        title: 'Event Planner',
+          theme: ThemeData(
+            useMaterial3: true
+          ),
+          home: const CreateAccountPage(),
+        )
       ),
+
+
     );
   }
 }
 
-class AccountCreationForm extends StatelessWidget {
-  const AccountCreationForm({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20.0),
-      width: 300,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 15.0,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          const Text(
-            'CREATE YOUR ACCOUNT',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 10.0),
-         const Text(
-            'This is step 1',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey),
-          ),
-          const SizedBox(height: 20.0),
-          TextField(
-            decoration: InputDecoration(
-              labelText: 'Email',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
-            keyboardType: TextInputType.emailAddress,
-          ),
-          SizedBox(height: 15.0),
-          TextField(
-            decoration: InputDecoration(
-              labelText: 'Password',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
-            obscureText: true,
-          ),
-          SizedBox(height: 15.0),
-          TextField(
-            decoration: InputDecoration(
-              labelText: 'Confirm Password',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
-            obscureText: true,
-          ),
-          SizedBox(height: 20.0),
-          ElevatedButton(
-            onPressed: () {
-            },
-            style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.all(15.0),
-              backgroundColor: Colors.green,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
-            child: Text('Next'),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//using screenutil to make images responsive
+// body: Center(
+// child: Image.asset(
+// 'assets/images/welcome.png',
+// width: 150.w, // Example of using ScreenUtil for image size
+// height: 150.h,
+// ),
+
 
