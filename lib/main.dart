@@ -1,21 +1,18 @@
+import 'package:event_planner_app/features/authentication/pages/sign_up_options.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:overlay_support/overlay_support.dart';
 
+
 import 'features/authentication/pages/create_account_screen.dart';
+import 'firebase/firebase_options.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey:
-      "AIzaSyCpbL9l2qDfELlCY_2LMsgUuqKvT1q70mo",
-      appId:
-      "1:897035289106:android:4068419aa5d4b5f5e40ecb",
-      messagingSenderId: "897035289106",
-      projectId:"event-planner-8a49d",
-    ),
+    options: DefaultFirebaseOptions.android,
   );
   runApp(const MyApp());
 }
@@ -37,11 +34,9 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             useMaterial3: true
           ),
-          home: const CreateAccountPage(),
+          home: const SignUpOptions(), // CreateAccountPage()//
         )
       ),
-
-
     );
   }
 }
