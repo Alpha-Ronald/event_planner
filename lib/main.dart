@@ -1,4 +1,4 @@
-import 'package:event_planner_app/features/authentication/pages/sign_up_options.dart';
+import 'package:event_planner_app/features/authentication/pages/sign_up_options_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
