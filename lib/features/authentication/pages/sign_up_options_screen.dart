@@ -1,5 +1,5 @@
 import 'package:event_planner_app/features/authentication/pages/create_account_screen.dart';
-import 'package:event_planner_app/features/home_page/pages/home_page.dart';
+import 'package:event_planner_app/features/home_page/pages/home_page_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

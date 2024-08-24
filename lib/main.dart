@@ -1,3 +1,4 @@
+import 'package:event_planner_app/core/colors.dart';
 import 'package:event_planner_app/features/authentication/pages/sign_up_options_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -32,7 +33,8 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(debugShowCheckedModeBanner: false,
         title: 'Event Planner',
           theme: ThemeData(
-              useMaterial3: true
+              useMaterial3: true,
+            scaffoldBackgroundColor: veryLightBlue
           ),
           home: const SignUpOptions(), // CreateAccountPage()//
         )
