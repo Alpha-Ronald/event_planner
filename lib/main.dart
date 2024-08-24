@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(debugShowCheckedModeBanner: false,
         title: 'Event Planner',
           theme: ThemeData(
-            useMaterial3: true
+              useMaterial3: true
           ),
           home: const SignUpOptions(), // CreateAccountPage()//
         )
