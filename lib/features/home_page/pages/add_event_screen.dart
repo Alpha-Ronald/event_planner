@@ -1,4 +1,4 @@
-// import 'dart:developer';
+import 'dart:developer';
 
 import 'package:event_planner_app/core/textStyles.dart';
 import 'package:event_planner_app/features/home_page/widgets/add_event_button.dart';
@@ -18,6 +18,9 @@ class AddEventPage extends ConsumerStatefulWidget {
 }
 
 class _AddEventPageState extends ConsumerState<AddEventPage> {
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
+
   DateTime _selectedDate = DateTime.now();
   String _endTime = '9:30 PM';
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
@@ -48,9 +51,16 @@ class _AddEventPageState extends ConsumerState<AddEventPage> {
               SizedBox(
                 height: 5.h,
               ),
-              const AddEventInputField(
-                  title: 'Title', hint: 'Enter title here.'),
-              const AddEventInputField(title: "Note", hint: "Enter note here."),
+              AddEventInputField(
+                title: 'Title',
+                hint: 'Enter title here.',
+                controller: _titleController,
+              ),
+              AddEventInputField(
+                title: "Note",
+                hint: "Enter note here.",
+                controller: _noteController,
+              ),
               AddEventInputField(
                 title: "Date",
                 hint: DateFormat.yMd().format(_selectedDate),
@@ -103,7 +113,7 @@ class _AddEventPageState extends ConsumerState<AddEventPage> {
                 suffixIcon: DropdownButton<String>(
                   icon: Padding(
                     padding: EdgeInsets.only(right: 5.w),
-                    child: Icon(Icons.keyboard_arrow_down),
+                    child: const Icon(Icons.keyboard_arrow_down),
                   ),
                   iconSize: 25,
                   elevation: 4,
@@ -130,7 +140,7 @@ class _AddEventPageState extends ConsumerState<AddEventPage> {
                 suffixIcon: DropdownButton<String>(
                   icon: Padding(
                     padding: EdgeInsets.only(right: 5.w),
-                    child: Icon(Icons.keyboard_arrow_down),
+                    child: const Icon(Icons.keyboard_arrow_down),
                   ),
                   iconSize: 25,
                   elevation: 4,
@@ -162,7 +172,9 @@ class _AddEventPageState extends ConsumerState<AddEventPage> {
                   _colorPalete(),
                   AddEventButton(
                     buttonText: 'Create Task',
-                    onTap: () {},
+                    onTap: () {
+                      _validateData();
+                    },
                   )
                 ],
               )
@@ -171,6 +183,24 @@ class _AddEventPageState extends ConsumerState<AddEventPage> {
         ),
       ),
     );
+  }
+
+  _validateData() {
+    if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
+      log('message');
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'All fields are required',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   _colorPalete() {

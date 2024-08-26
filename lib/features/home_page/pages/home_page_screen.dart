@@ -24,7 +24,9 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     final themeNotifier = ref.read(themeNotifierProvider.notifier);
     final isDarkMode =
-        ref.watch(themeNotifierProvider).brightness == Brightness.dark;
+        ref
+            .watch(themeNotifierProvider)
+            .brightness == Brightness.dark;
     return Scaffold(
       appBar: _appBar(isDarkMode, themeNotifier),
       body: Column(
@@ -67,9 +69,11 @@ class _HomePageState extends ConsumerState<HomePage> {
 
 AppBar _appBar(bool isDarkMode, ThemeNotifier themeNotifier) {
   return AppBar(
-    leading: GestureDetector(
+    leading: InkWell(
       child: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
       onTap: () => themeNotifier.toggleTheme(),
+      borderRadius: BorderRadius.circular(5),
+      splashColor: Colors.transparent,
     ),
     elevation: 0,
     backgroundColor: isDarkMode ? Colors.black : veryLightBlue,
