@@ -1,28 +1,32 @@
 import 'package:event_planner_app/core/colors.dart';
-import 'package:event_planner_app/core/theme.dart';
+import 'package:event_planner_app/core/textStyles.dart';
 import 'package:event_planner_app/features/home_page/widgets/add_event_button.dart';
+import 'package:event_planner_app/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
-
 import 'add_event_screen.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   DateTime _selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = ref.read(themeNotifierProvider.notifier);
+    final isDarkMode =
+        ref.watch(themeNotifierProvider).brightness == Brightness.dark;
     return Scaffold(
-      appBar: _appBar(),
+      appBar: _appBar(isDarkMode, themeNotifier),
       body: Column(
         children: [
           _addEventBar(context),
@@ -61,11 +65,14 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-_appBar() {
+AppBar _appBar(bool isDarkMode, ThemeNotifier themeNotifier) {
   return AppBar(
-    leading: Icon(Icons.light_mode),
+    leading: GestureDetector(
+      child: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
+      onTap: () => themeNotifier.toggleTheme(),
+    ),
     elevation: 0,
-    backgroundColor: veryLightBlue,
+    backgroundColor: isDarkMode ? Colors.black : veryLightBlue,
     actions: [
       CircleAvatar(
         backgroundImage: AssetImage('images/my_image.jpg'),

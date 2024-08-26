@@ -1,4 +1,4 @@
-import 'package:event_planner_app/core/theme.dart';
+import 'package:event_planner_app/core/textStyles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

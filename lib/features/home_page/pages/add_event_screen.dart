@@ -1,21 +1,23 @@
 // import 'dart:developer';
 
-import 'package:event_planner_app/core/theme.dart';
+import 'package:event_planner_app/core/textStyles.dart';
 import 'package:event_planner_app/features/home_page/widgets/add_event_button.dart';
 import 'package:event_planner_app/features/home_page/widgets/add_event_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import '../../../core/colors.dart';
+import '../../../providers/theme_provider.dart';
 
-class AddEventPage extends StatefulWidget {
+class AddEventPage extends ConsumerStatefulWidget {
   const AddEventPage({super.key});
 
   @override
-  State<AddEventPage> createState() => _AddEventPageState();
+  ConsumerState<AddEventPage> createState() => _AddEventPageState();
 }
 
-class _AddEventPageState extends State<AddEventPage> {
+class _AddEventPageState extends ConsumerState<AddEventPage> {
   DateTime _selectedDate = DateTime.now();
   String _endTime = '9:30 PM';
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
@@ -29,8 +31,10 @@ class _AddEventPageState extends State<AddEventPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode =
+        ref.watch(themeNotifierProvider).brightness == Brightness.dark;
     return Scaffold(
-      appBar: _appBar(),
+      appBar: _appBar(isDarkMode),
       body: Container(
         padding: EdgeInsets.only(right: 20.w, left: 20.w, bottom: 20.w),
         child: SingleChildScrollView(
@@ -97,7 +101,10 @@ class _AddEventPageState extends State<AddEventPage> {
                 hint: '$_selectedReminder minutes early',
                 readOnly: true,
                 suffixIcon: DropdownButton<String>(
-                  icon: const Icon(Icons.keyboard_arrow_down),
+                  icon: Padding(
+                    padding: EdgeInsets.only(right: 5.w),
+                    child: Icon(Icons.keyboard_arrow_down),
+                  ),
                   iconSize: 25,
                   elevation: 4,
                   underline: Container(
@@ -121,7 +128,10 @@ class _AddEventPageState extends State<AddEventPage> {
                 hint: _selectedRepeat,
                 readOnly: true,
                 suffixIcon: DropdownButton<String>(
-                  icon: const Icon(Icons.keyboard_arrow_down),
+                  icon: Padding(
+                    padding: EdgeInsets.only(right: 5.w),
+                    child: Icon(Icons.keyboard_arrow_down),
+                  ),
                   iconSize: 25,
                   elevation: 4,
                   underline: Container(
@@ -204,12 +214,12 @@ class _AddEventPageState extends State<AddEventPage> {
     );
   }
 
-  _appBar() {
+  AppBar _appBar(bool isDarkMode) {
     return AppBar(
       automaticallyImplyLeading: true,
       //leading: Icon(Icons.arrow_back),
       elevation: 0,
-      backgroundColor: veryLightBlue,
+      backgroundColor: isDarkMode ? Colors.black : veryLightBlue,
       actions: [
         const CircleAvatar(
           backgroundImage: AssetImage('images/my_image.jpg'),
