@@ -1,6 +1,7 @@
 // import 'dart:developer';
 
 import 'package:event_planner_app/core/theme.dart';
+import 'package:event_planner_app/features/home_page/widgets/add_event_button.dart';
 import 'package:event_planner_app/features/home_page/widgets/add_event_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -145,7 +146,15 @@ class _AddEventPageState extends State<AddEventPage> {
                 height: 15.h,
               ),
               Row(
-                children: [_colorPalete()],
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _colorPalete(),
+                  AddEventButton(
+                    buttonText: 'Create Task',
+                    onTap: () {},
+                  )
+                ],
               )
             ],
           ),
