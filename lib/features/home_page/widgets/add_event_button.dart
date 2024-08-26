@@ -1,5 +1,5 @@
 import 'package:event_planner_app/core/colors.dart';
-import 'package:event_planner_app/features/home_page/pages/add_task_screen.dart';
+import 'package:event_planner_app/features/home_page/pages/add_event_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';

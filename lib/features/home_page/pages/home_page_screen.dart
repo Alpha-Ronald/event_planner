@@ -1,13 +1,13 @@
 import 'package:event_planner_app/core/colors.dart';
 import 'package:event_planner_app/core/theme.dart';
-import 'package:event_planner_app/features/home_page/widgets/add_task_button.dart';
+import 'package:event_planner_app/features/home_page/widgets/add_event_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 
-import 'add_task_screen.dart';
+import 'add_event_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -100,7 +100,7 @@ _addEventBar(BuildContext context) {
           onTap: () {
             Navigator.push(context, MaterialPageRoute(
               builder: (context) {
-                return const AddTaskPage();
+                return const AddEventPage();
               },
             ));
           },

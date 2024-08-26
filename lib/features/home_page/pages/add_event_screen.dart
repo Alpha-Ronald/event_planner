@@ -7,14 +7,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import '../../../core/colors.dart';
 
-class AddTaskPage extends StatefulWidget {
-  const AddTaskPage({super.key});
+class AddEventPage extends StatefulWidget {
+  const AddEventPage({super.key});
 
   @override
-  State<AddTaskPage> createState() => _AddTaskPageState();
+  State<AddEventPage> createState() => _AddEventPageState();
 }
 
-class _AddTaskPageState extends State<AddTaskPage> {
+class _AddEventPageState extends State<AddEventPage> {
   DateTime _selectedDate = DateTime.now();
   String _endTime = '9:30 PM';
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
