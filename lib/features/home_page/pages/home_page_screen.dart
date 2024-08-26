@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 
+import 'add_task_screen.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -23,7 +25,7 @@ class _HomePageState extends State<HomePage> {
       appBar: _appBar(),
       body: Column(
         children: [
-          _addTaskBar(),
+          _addEventBar(context),
           DatePicker(
             DateTime.now(),
             height: 100,
@@ -31,22 +33,26 @@ class _HomePageState extends State<HomePage> {
             initialSelectedDate: DateTime.now(),
             selectionColor: primaryColor,
             selectedTextColor: Colors.white,
-            dateTextStyle: GoogleFonts.lato(textStyle: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey
-            ),),dayTextStyle: GoogleFonts.lato(textStyle: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey
-            ),),
-                  monthTextStyle: GoogleFonts.lato(textStyle: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey
-            ),),
-            onDateChange: (date){
-              _selectedDate=date;
+            dateTextStyle: GoogleFonts.lato(
+              textStyle: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey),
+            ),
+            dayTextStyle: GoogleFonts.lato(
+              textStyle: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey),
+            ),
+            monthTextStyle: GoogleFonts.lato(
+              textStyle: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey),
+            ),
+            onDateChange: (date) {
+              _selectedDate = date;
             },
           ),
         ],
@@ -55,7 +61,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-_appBar(){
+_appBar() {
   return AppBar(
     leading: Icon(Icons.light_mode),
     elevation: 0,
@@ -71,7 +77,7 @@ _appBar(){
   );
 }
 
-_addTaskBar(){
+_addEventBar(BuildContext context) {
   return Padding(
     padding: const EdgeInsets.fromLTRB(20.0, 0, 20, 15),
     child: Row(
@@ -90,7 +96,16 @@ _addTaskBar(){
             ),
           ],
         ),
-        const AddTaskButton()
+        AddEventButton(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(
+              builder: (context) {
+                return const AddTaskPage();
+              },
+            ));
+          },
+          buttonText: '+ Add Event',
+        )
       ],
     ),
   );

@@ -2,8 +2,8 @@ import 'package:event_planner_app/core/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class TextInputField extends StatelessWidget {
-  const TextInputField(
+class AddEventInputField extends StatelessWidget {
+  const AddEventInputField(
       {super.key,
       required this.title,
       required this.hint,

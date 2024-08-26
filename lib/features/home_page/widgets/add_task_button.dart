@@ -4,27 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AddTaskButton extends StatelessWidget {
-  const AddTaskButton({super.key});
+class AddEventButton extends StatelessWidget {
+  const AddEventButton(
+      {super.key, required this.buttonText, required this.onTap});
+
+  final String buttonText;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(
-          builder: (context) {
-            return const AddTaskPage();
-          },
-        ));
-      },
+      onTap: onTap,
       child: Container(
         width: 100.w,
         height: 60.h,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20), color: primaryColor),
-        child: const Center(
+        child: Center(
           child: Text(
-            '+ Add Event',
+            buttonText,
             style: TextStyle(color: Colors.white),
           ),
         ),
