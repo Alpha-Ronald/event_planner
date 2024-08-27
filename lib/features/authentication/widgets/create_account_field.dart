@@ -7,34 +7,42 @@ class CreateAccountField extends StatelessWidget {
   const CreateAccountField(
       {super.key,
       required this.title,
-      required this.label,
       required this.keyboardType,
-      required this.hintText});
+      required this.hintText,
+      this.obscureText = false,
+      this.controller});
 
   final String title;
-  final String label;
+
   final TextInputType keyboardType;
   final String hintText;
+  final bool obscureText;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(title, style: titleStyle),
-        SizedBox(
-          height: 5.h,
-        ),
-        TextField(
-          decoration: InputDecoration(
-            hintText: hintText,
-            labelText: label,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.r),
-            ),
+    return Padding(
+      padding: EdgeInsets.only(bottom: 15.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: titleStyle),
+          SizedBox(
+            height: 5.h,
           ),
-          keyboardType: keyboardType,
-        ),
-      ],
+          TextFormField(
+            decoration: InputDecoration(
+              hintText: hintText,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+            ),
+            keyboardType: keyboardType,
+            obscureText: obscureText,
+            controller: controller,
+          ),
+        ],
+      ),
     );
   }
 }

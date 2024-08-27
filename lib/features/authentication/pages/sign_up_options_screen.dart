@@ -13,7 +13,6 @@ class SignUpOptions extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeNotifier = ref.read(themeNotifierProvider.notifier);
     final isDarkMode =
         ref.watch(themeNotifierProvider).brightness == Brightness.dark;
     return Scaffold(
