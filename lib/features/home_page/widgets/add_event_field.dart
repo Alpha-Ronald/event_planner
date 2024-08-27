@@ -36,7 +36,7 @@ class AddEventInputField extends StatelessWidget {
               suffixIcon: suffixIcon,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(
-                  Radius.circular(8.w),
+                  Radius.circular(8.r),
                 ),
               ),
             ),

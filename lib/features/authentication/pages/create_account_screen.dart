@@ -18,7 +18,7 @@ class CreateAccountPage extends StatelessWidget {
               BoxShadow(
                 color: Colors.black.withOpacity(0.2),
                 blurRadius: 15.r,
-                offset: Offset(0, 5),
+                offset: const Offset(0, 5),
               ),
             ],
           ),
@@ -72,8 +72,7 @@ class CreateAccountPage extends StatelessWidget {
               ),
               SizedBox(height: 20.h),
               ElevatedButton(
-                onPressed: () {
-                },
+                onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.all(15.h),
                   backgroundColor: Colors.green,
