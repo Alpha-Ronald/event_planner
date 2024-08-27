@@ -29,6 +29,7 @@ class AddEventInputField extends StatelessWidget {
             height: 5.h,
           ),
           TextFormField(
+            controller: controller,
             readOnly: readOnly,
             decoration: InputDecoration(
               hintText: hint,

@@ -186,6 +186,9 @@ class _AddEventPageState extends ConsumerState<AddEventPage> {
   }
 
   _validateData() {
+    log('Title: ${_titleController.text}');
+    log('Note: ${_noteController.text}');
+
     if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
       log('message');
       Navigator.pop(context);
