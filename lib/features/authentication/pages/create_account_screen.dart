@@ -5,14 +5,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/textStyles.dart';
+import '../../../services/firbase_auth.dart';
 import '../../../utils/sign_up_method.dart';
 import '../../../providers/theme_provider.dart';
 
-class CreateAccountPage extends ConsumerWidget {
-  CreateAccountPage({super.key, required this.signUpMethod});
-
+class CreateAccountPage extends ConsumerStatefulWidget {
   final SignUpMethod signUpMethod;
 
+  const CreateAccountPage({super.key, required this.signUpMethod});
+
+  @override
+  _CreateAccountPageState createState() => _CreateAccountPageState();
+}
+
+class _CreateAccountPageState extends ConsumerState<CreateAccountPage> {
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _genderController = TextEditingController();
@@ -21,16 +27,57 @@ class CreateAccountPage extends ConsumerWidget {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
+
+  Future<void> _signUp(BuildContext context) async {
+    if (!_validateInfo(context)) return;
+
+    final username = _userNameController.text.trim();
+    final fullName = _fullNameController.text.trim();
+    final gender = _genderController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      final user = await _authService.signUpWithEmailAndPassword(
+        email: email,
+        password: password,
+        username: username,
+        fullName: fullName,
+        gender: gender,
+      );
+
+      if (user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Account created successfully')));
+        // Navigate to the next page or perform any other desired action
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create account: $e')));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final isDarkMode =
         ref.watch(themeNotifierProvider).brightness == Brightness.dark;
     String titleText =
-        signUpMethod == SignUpMethod.email ? 'Email' : 'Phone Number';
-    TextInputType inputType = signUpMethod == SignUpMethod.email
+        widget.signUpMethod == SignUpMethod.email ? 'Email' : 'Phone Number';
+    TextInputType inputType = widget.signUpMethod == SignUpMethod.email
         ? TextInputType.emailAddress
         : TextInputType.phone;
+
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
         child: SingleChildScrollView(
@@ -71,7 +118,6 @@ class CreateAccountPage extends ConsumerWidget {
                     style: TextStyle(color: Colors.grey),
                   ),
                   SizedBox(height: 20.h),
-                  // CreateAccountField(title: '', label: '', keyboardType: null, hintText: '',),
                   CreateAccountField(
                     title: 'Username',
                     hintText: 'dav-06',
@@ -95,10 +141,11 @@ class CreateAccountPage extends ConsumerWidget {
                     controller: _emailController,
                     title: titleText,
                     keyboardType: inputType,
-                    hintText: signUpMethod == SignUpMethod.email
+                    hintText: widget.signUpMethod == SignUpMethod.email
                         ? "abc@gmail.com"
                         : "08123456789",
-                    inputLength: signUpMethod == SignUpMethod.email ? 20 : 11,
+                    inputLength:
+                        widget.signUpMethod == SignUpMethod.email ? 50 : 11,
                   ),
                   CreateAccountField(
                     controller: _passwordController,
@@ -116,24 +163,28 @@ class CreateAccountPage extends ConsumerWidget {
                     obscureText: true,
                     inputLength: 20,
                   ),
-
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.all(15.h),
-                      backgroundColor: primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.r),
-                      ),
-                    ),
-                    child: Text(
-                      'Create Account',
-                      style: TextStyle(
-                          fontWeight: titleStyle.fontWeight,
-                          fontSize: titleStyle.fontSize,
-                          color: Colors.white),
-                    ),
-                  ),
+                  SizedBox(height: 20.h),
+                  _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ElevatedButton(
+                          onPressed: () {
+                            _signUp(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.all(15.h),
+                            backgroundColor: primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.r),
+                            ),
+                          ),
+                          child: Text(
+                            'Create Account',
+                            style: TextStyle(
+                                fontWeight: titleStyle.fontWeight,
+                                fontSize: titleStyle.fontSize,
+                                color: Colors.white),
+                          ),
+                        ),
                 ],
               ),
             ),
@@ -141,5 +192,44 @@ class CreateAccountPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  bool _validateInfo(BuildContext context) {
+    final username = _userNameController.text.trim();
+    final fullName = _fullNameController.text.trim();
+    final gender = _genderController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (username.isEmpty ||
+        fullName.isEmpty ||
+        gender.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all the fields')),
+      );
+      return false;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
+      return false;
+    }
+    if (gender != "Male" &&
+        gender != "male" &&
+        gender != "Female" &&
+        gender != "female") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gender can only be male or female')),
+      );
+      return false;
+    }
+
+    return true;
   }
 }

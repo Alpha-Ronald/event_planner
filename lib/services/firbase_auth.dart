@@ -5,7 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
   //Sign up with Email and Password
   Future<User?> signUpWithEmailAndPassword({
@@ -17,7 +17,7 @@ class AuthService {
   }) async {
     try {
       //check if userName exists
-      final usernameExists = await _firestore
+      final usernameExists = await _fireStore
           .collection('users')
           .doc(username)
           .get()
@@ -35,7 +35,7 @@ class AuthService {
 
       //Storing additional data in firestore
       if (user != null) {
-        await _firestore.collection('users').doc(username).set({
+        await _fireStore.collection('users').doc(username).set({
           'uid': user.uid,
           'username': username,
           'email': email,
@@ -44,8 +44,31 @@ class AuthService {
           'createdAt': FieldValue.serverTimestamp(),
         });
       }
+      return user;
     } catch (e) {
-      throw Exception('Failed to sign up: $e');
+      // throw Exception('Failed to sign up: $e');
+      String errorMessage;
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'email-already-in-use':
+            errorMessage = 'This email is already in use.';
+            break;
+          case 'weak-password':
+            errorMessage = 'Password must be at least 6 characters.';
+            break;
+          case 'invalid-email':
+            errorMessage = 'Please enter a valid email address.';
+            break;
+          default:
+            errorMessage = 'Failed to create an account. Please try again.';
+        }
+      } else if (e.toString().contains('Username already taken')) {
+        errorMessage = 'Username is already taken. Please choose another one.';
+      } else {
+        errorMessage = e.toString();
+      }
+
+      throw errorMessage;
     }
   }
 
@@ -57,7 +80,25 @@ class AuthService {
           email: email, password: password);
       return userCredential.user;
     } catch (e) {
-      throw Exception('Failed to sign in $e');
+      // throw Exception('Failed to sign in $e');
+      String errorMessage;
+
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'user-not-found':
+            errorMessage = 'No user found with this email.';
+            break;
+          case 'wrong-password':
+            errorMessage = 'Incorrect password.';
+            break;
+          default:
+            errorMessage = 'Failed to sign in. Please try again.';
+        }
+      } else {
+        errorMessage = e.toString();
+      }
+
+      throw errorMessage;
     }
   }
 
