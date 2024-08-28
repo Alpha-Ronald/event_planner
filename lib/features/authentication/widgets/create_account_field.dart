@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/textStyles.dart';
@@ -10,7 +11,8 @@ class CreateAccountField extends StatelessWidget {
       required this.keyboardType,
       required this.hintText,
       this.obscureText = false,
-      this.controller});
+      this.controller,
+      required this.inputLength});
 
   final String title;
 
@@ -18,6 +20,7 @@ class CreateAccountField extends StatelessWidget {
   final String hintText;
   final bool obscureText;
   final TextEditingController? controller;
+  final int inputLength;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +34,10 @@ class CreateAccountField extends StatelessWidget {
             height: 5.h,
           ),
           TextFormField(
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(inputLength),
+              // Adjust the maximum length as needed
+            ],
             decoration: InputDecoration(
               hintText: hintText,
               border: OutlineInputBorder(

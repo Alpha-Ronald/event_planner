@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/colors.dart';
 import '../../../providers/theme_provider.dart';
+import '../../../utils/sign_up_method.dart';
 import '../widgets/sign_up_option_button.dart';
 
 class SignUpOptions extends ConsumerWidget {
@@ -27,7 +28,8 @@ class SignUpOptions extends ConsumerWidget {
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(
                     builder: (context) {
-                      return CreateAccountPage();
+                      return CreateAccountPage(
+                          signUpMethod: SignUpMethod.email);
                     },
                   ));
                 },
@@ -39,13 +41,27 @@ class SignUpOptions extends ConsumerWidget {
               ),
               SignUpButton(
                 text: 'Sign-Up with Phone number ',
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) {
+                      return CreateAccountPage(
+                          signUpMethod: SignUpMethod.phoneNumber);
+                    },
+                  ));
+                },
                 icon: Icon(Icons.phone),
                 color: isDarkMode ? Colors.black : Colors.white,
               ),
               SignUpButton(
                 text: 'Sign-Up with Google',
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) {
+                      return CreateAccountPage(
+                          signUpMethod: SignUpMethod.google);
+                    },
+                  ));
+                },
                 icon: Icon(
                   Icons.g_mobiledata_outlined,
                   color: Colors.redAccent,
@@ -55,7 +71,14 @@ class SignUpOptions extends ConsumerWidget {
               ), //replace this with google icon
               SignUpButton(
                 text: 'Sign-Up with facebook',
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) {
+                      return CreateAccountPage(
+                          signUpMethod: SignUpMethod.facebook);
+                    },
+                  ));
+                },
                 icon: Icon(
                   Icons.facebook,
                   color: Colors.blue,
