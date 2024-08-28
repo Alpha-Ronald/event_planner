@@ -43,6 +43,8 @@ class AuthService {
           'gender': gender,
           'createdAt': FieldValue.serverTimestamp(),
         });
+        // Send verification email
+        await user.sendEmailVerification();
       }
       return user;
     } catch (e) {
@@ -78,7 +80,16 @@ class AuthService {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      return userCredential.user;
+      User? user = userCredential.user;
+
+      if (user != null) {
+        // Check if email is verified
+        if (!user.emailVerified) {
+          throw Exception('Please verify your email before logging in.');
+        }
+      }
+
+      return user;
     } catch (e) {
       // throw Exception('Failed to sign in $e');
       String errorMessage;
