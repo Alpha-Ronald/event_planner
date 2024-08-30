@@ -29,6 +29,8 @@ class _CreateAccountPageState extends ConsumerState<CreateAccountPage> {
 
   final AuthService _authService = AuthService();
   bool _isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   Future<void> _signUp(BuildContext context) async {
     if (!_validateInfo(context)) return;
@@ -152,7 +154,17 @@ class _CreateAccountPageState extends ConsumerState<CreateAccountPage> {
                     title: "Password",
                     keyboardType: TextInputType.text,
                     hintText: "Av3*fs",
-                    obscureText: true,
+                    obscureText: _obscurePassword,
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscurePassword
+                          ? Icons.visibility
+                          : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                     inputLength: 20,
                   ),
                   CreateAccountField(
@@ -162,6 +174,16 @@ class _CreateAccountPageState extends ConsumerState<CreateAccountPage> {
                     hintText: "Av3*fs",
                     obscureText: true,
                     inputLength: 20,
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscureConfirmPassword
+                          ? Icons.visibility
+                          : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _obscureConfirmPassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                   ),
                   SizedBox(height: 20.h),
                   _isLoading

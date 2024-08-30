@@ -88,7 +88,6 @@ class AuthService {
           throw Exception('Please verify your email before logging in.');
         }
       }
-
       return user;
     } catch (e) {
       // throw Exception('Failed to sign in $e');

@@ -12,7 +12,8 @@ class CreateAccountField extends StatelessWidget {
       required this.hintText,
       this.obscureText = false,
       this.controller,
-      required this.inputLength});
+      required this.inputLength,
+      this.suffixIcon});
 
   final String title;
 
@@ -21,6 +22,7 @@ class CreateAccountField extends StatelessWidget {
   final bool obscureText;
   final TextEditingController? controller;
   final int inputLength;
+  final IconButton? suffixIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,7 @@ class CreateAccountField extends StatelessWidget {
               // Adjust the maximum length as needed
             ],
             decoration: InputDecoration(
+              suffixIcon: suffixIcon,
               hintText: hintText,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.r),
