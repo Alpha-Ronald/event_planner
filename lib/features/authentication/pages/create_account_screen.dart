@@ -1,4 +1,5 @@
 import 'package:event_planner_app/core/colors.dart';
+import 'package:event_planner_app/features/authentication/pages/verification_&_otp_screen.dart';
 import 'package:event_planner_app/features/authentication/widgets/create_account_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,13 +27,58 @@ class _CreateAccountPageState extends ConsumerState<CreateAccountPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
 
   final AuthService _authService = AuthService();
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  Future<void> _signUpPhone(BuildContext context) async {}
+  Future<void> _signUpPhone(BuildContext context) async {
+    if (!_validateInfo(context)) return;
+
+    final username = _userNameController.text.trim();
+    final fullName = _fullNameController.text.trim();
+    final gender = _genderController.text.trim();
+    final phoneNumber = _phoneController.text.trim();
+
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      await _authService.signUpWithPhoneNumber(
+        phoneNumber: phoneNumber,
+        username: username,
+        fullName: fullName,
+        gender: gender,
+        onCodeSent: (verificationId) {
+          setState(() {
+            _isLoading = false;
+          });
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VerificationScreen(
+                signUpMethod: SignUpMethod.phoneNumber,
+                verificationId: verificationId,
+                username: username,
+                fullName: fullName,
+                gender: gender,
+              ),
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to send OTP: $e')),
+      );
+    }
+  }
 
   Future<void> _signUpEmail(BuildContext context) async {
     if (!_validateInfo(context)) return;
@@ -142,14 +188,16 @@ class _CreateAccountPageState extends ConsumerState<CreateAccountPage> {
                       hintText: "male",
                       inputLength: 6),
                   CreateAccountField(
-                    controller: _emailController,
+                    controller: widget.signUpMethod == SignUpMethod.email
+                        ? _emailController
+                        : _phoneController,
                     title: titleText,
                     keyboardType: inputType,
                     hintText: widget.signUpMethod == SignUpMethod.email
                         ? "abc@gmail.com"
                         : "08123456789",
                     inputLength:
-                        widget.signUpMethod == SignUpMethod.email ? 50 : 11,
+                        widget.signUpMethod == SignUpMethod.email ? 50 : 14,
                   ),
                   CreateAccountField(
                     controller: _passwordController,
@@ -231,7 +279,7 @@ class _CreateAccountPageState extends ConsumerState<CreateAccountPage> {
     if (username.isEmpty ||
         fullName.isEmpty ||
         gender.isEmpty ||
-        email.isEmpty ||
+        // email.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(

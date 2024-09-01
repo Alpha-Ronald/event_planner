@@ -7,6 +7,81 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
+  // Method to verify if a username already exists
+  Future<bool> checkUsernameExists(String username) async {
+    final usernameExists = await _fireStore
+        .collection('users')
+        .doc(username)
+        .get()
+        .then((doc) => doc.exists);
+    return usernameExists;
+  }
+
+  // Sign up with Phone Number
+  Future<void> signUpWithPhoneNumber({
+    required String phoneNumber,
+    required String username,
+    required String fullName,
+    required String gender,
+    required Function(String verificationId) onCodeSent,
+  }) async {
+    try {
+      bool usernameExists = await checkUsernameExists(username);
+      if (usernameExists) {
+        throw Exception('Username already taken.');
+      }
+
+      await _auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // Auto-sign in for Android devices
+          await _auth.signInWithCredential(credential);
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          throw Exception('Verification failed: ${e.message}');
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          onCodeSent(verificationId);
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {},
+      );
+    } catch (e) {
+      throw Exception('Failed to sign up: $e');
+    }
+  }
+
+  // Verify OTP and create the account
+  Future<User?> verifyOtpAndCreateAccount({
+    required String verificationId,
+    required String smsCode,
+    required String username,
+    required String fullName,
+    required String gender,
+  }) async {
+    try {
+      final credential = PhoneAuthProvider.credential(
+          verificationId: verificationId, smsCode: smsCode);
+
+      UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+      User? user = userCredential.user;
+
+      if (user != null) {
+        await _fireStore.collection('users').doc(username).set({
+          'uid': user.uid,
+          'username': username,
+          'fullName': fullName,
+          'gender': gender,
+          'phoneNumber': user.phoneNumber,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      }
+      return user;
+    } catch (e) {
+      throw Exception('Failed to verify OTP: $e');
+    }
+  }
+
   //Sign up with Email and Password
   Future<User?> signUpWithEmailAndPassword({
     required String email,
