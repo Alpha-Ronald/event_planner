@@ -32,7 +32,9 @@ class _CreateAccountPageState extends ConsumerState<CreateAccountPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  Future<void> _signUp(BuildContext context) async {
+  Future<void> _signUpPhone(BuildContext context) async {}
+
+  Future<void> _signUpEmail(BuildContext context) async {
     if (!_validateInfo(context)) return;
 
     final username = _userNameController.text.trim();
@@ -190,7 +192,9 @@ class _CreateAccountPageState extends ConsumerState<CreateAccountPage> {
                       ? const Center(child: CircularProgressIndicator())
                       : ElevatedButton(
                           onPressed: () {
-                            _signUp(context);
+                            widget.signUpMethod == SignUpMethod.email
+                                ? _signUpEmail(context)
+                                : _signUpPhone(context);
                           },
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.all(15.h),
