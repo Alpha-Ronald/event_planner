@@ -15,7 +15,9 @@ class SignUpOptions extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode =
-        ref.watch(themeNotifierProvider).brightness == Brightness.dark;
+        ref
+            .watch(themeNotifierProvider)
+            .brightness == Brightness.dark;
     return Scaffold(
       body: Center(
         child: Padding(
@@ -28,12 +30,12 @@ class SignUpOptions extends ConsumerWidget {
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(
                     builder: (context) {
-                      return CreateAccountPage(
+                      return const CreateAccountPage(
                           signUpMethod: SignUpMethod.email);
                     },
                   ));
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.email_rounded,
                   color: Colors.blue,
                 ),
@@ -44,12 +46,12 @@ class SignUpOptions extends ConsumerWidget {
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(
                     builder: (context) {
-                      return CreateAccountPage(
+                      return const CreateAccountPage(
                           signUpMethod: SignUpMethod.phoneNumber);
                     },
                   ));
                 },
-                icon: Icon(Icons.phone),
+                icon: const Icon(Icons.phone),
                 color: isDarkMode ? Colors.black : Colors.white,
               ),
               SignUpButton(
@@ -57,7 +59,7 @@ class SignUpOptions extends ConsumerWidget {
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(
                     builder: (context) {
-                      return CreateAccountPage(
+                      return const CreateAccountPage(
                           signUpMethod: SignUpMethod.google);
                     },
                   ));
@@ -93,13 +95,13 @@ class SignUpOptions extends ConsumerWidget {
                 children: [
                   Expanded(
                       child: Divider(
-                    thickness: 1,
-                  )),
+                        thickness: 1,
+                      )),
                   Text('OR'),
                   Expanded(
                       child: Divider(
-                    thickness: 1,
-                  ))
+                        thickness: 1,
+                      ))
                 ],
               ),
               SizedBox(

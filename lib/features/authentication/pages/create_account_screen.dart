@@ -34,51 +34,52 @@ class _CreateAccountPageState extends ConsumerState<CreateAccountPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  Future<void> _signUpPhone(BuildContext context) async {
-    if (!_validateInfo(context)) return;
-
-    final username = _userNameController.text.trim();
-    final fullName = _fullNameController.text.trim();
-    final gender = _genderController.text.trim();
-    final phoneNumber = _phoneController.text.trim();
-
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-
-      await _authService.signUpWithPhoneNumber(
-        phoneNumber: phoneNumber,
-        username: username,
-        fullName: fullName,
-        gender: gender,
-        onCodeSent: (verificationId) {
-          setState(() {
-            _isLoading = false;
-          });
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VerificationScreen(
-                signUpMethod: SignUpMethod.phoneNumber,
-                verificationId: verificationId,
-                username: username,
-                fullName: fullName,
-                gender: gender,
-              ),
-            ),
-          );
-        },
-      );
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to send OTP: $e')),
-      );
-    }
-  }
+  // Future<void> _signUpPhone(BuildContext context) async {
+  //   if (!_validateInfo(context)) return;
+  //
+  //   final username = _userNameController.text.trim();
+  //   final fullName = _fullNameController.text.trim();
+  //   final gender = _genderController.text.trim();
+  //   final phoneNumber = _phoneController.text.trim();
+  //
+  //   try {
+  //     setState(() {
+  //       _isLoading = true;
+  //     });
+  //
+  //     await _authService.signUpWithPhoneNumber(
+  //       phoneNumber: phoneNumber,
+  //       username: username,
+  //       fullName: fullName,
+  //       gender: gender,
+  //       onCodeSent: (verificationId) {
+  //         setState(() {
+  //           _isLoading = false;
+  //         });
+  //         Navigator.push(
+  //           context,
+  //           MaterialPageRoute(
+  //             builder: (context) =>
+  //                 VerificationScreen(
+  //                   signUpMethod: SignUpMethod.phoneNumber,
+  //                   verificationId: verificationId,
+  //                   username: username,
+  //                   fullName: fullName,
+  //                   gender: gender,
+  //                 ),
+  //           ),
+  //         );
+  //       },
+  //     );
+  //   } catch (e) {
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Failed to send OTP: $e')),
+  //     );
+  //   }
+  // }
 
   Future<void> _signUpEmail(BuildContext context) async {
     if (!_validateInfo(context)) return;
@@ -105,6 +106,11 @@ class _CreateAccountPageState extends ConsumerState<CreateAccountPage> {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Account created successfully')));
         // Navigate to the next page or perform any other desired action
+        Navigator.push(context, MaterialPageRoute(
+          builder: (context) {
+            return const VerificationScreen(signUpMethod: SignUpMethod.email);
+          },
+        ));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -240,9 +246,10 @@ class _CreateAccountPageState extends ConsumerState<CreateAccountPage> {
                       ? const Center(child: CircularProgressIndicator())
                       : ElevatedButton(
                           onPressed: () {
-                            widget.signUpMethod == SignUpMethod.email
-                                ? _signUpEmail(context)
-                                : _signUpPhone(context);
+                            // widget.signUpMethod == SignUpMethod.email
+                            //     ?
+                            _signUpEmail(context);
+                            //     : _signUpPhone(context);
                           },
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.all(15.h),
