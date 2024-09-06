@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,41 +19,55 @@ class AuthService {
     return usernameExists;
   }
 
-  // Sign up with Phone Number
+  // Method to send OTP for phone number verification
   Future<void> signUpWithPhoneNumber({
     required String phoneNumber,
     required String username,
     required String fullName,
     required String gender,
-    required Function(String verificationId) onCodeSent,
+    required Function(String) codeSentCallback, // Function to handle OTP
   }) async {
     try {
-      bool usernameExists = await checkUsernameExists(username);
+      log("Sign up process started");
+      log("Phone Number: $phoneNumber, Username: $username");
+      // Check if username already exists
+      final usernameExists = await checkUsernameExists(username);
       if (usernameExists) {
         throw Exception('Username already taken.');
       }
+      log("Sending OTP to: $phoneNumber");
 
+      // Send OTP to the phone number
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          // Auto-sign in for Android devices
+          log("OTP auto-resolved. Signing in...");
+          // Auto-resolve the SMS verification code (if applicable)
           await _auth.signInWithCredential(credential);
+          // Additional logic (if needed)
         },
         verificationFailed: (FirebaseAuthException e) {
-          throw Exception('Verification failed: ${e.message}');
+          log("Phone number verification failed: ${e.message}");
+          throw Exception('Phone number verification failed: ${e.message}');
         },
         codeSent: (String verificationId, int? resendToken) {
-          onCodeSent(verificationId);
+          log("OTP sent successfully. Verification ID: $verificationId");
+          // Save verificationId for later and handle OTP input
+          codeSentCallback(verificationId);
         },
-        codeAutoRetrievalTimeout: (String verificationId) {},
+        codeAutoRetrievalTimeout: (String verificationId) {
+          log("Auto retrieval timeout. Verification ID: $verificationId");
+          // Handle timeout (optional)
+        },
       );
     } catch (e) {
-      throw Exception('Failed to sign up: $e');
+      log("Failed to send OTP: ${e.toString()}");
+      throw Exception('Failed to send OTP: ${e.toString()}');
     }
   }
 
-  // Verify OTP and create the account
-  Future<User?> verifyOtpAndCreateAccount({
+  // Method to verify the OTP and create an account
+  Future<User?> verifyOTPAndCreateAccount({
     required String verificationId,
     required String smsCode,
     required String username,
@@ -59,28 +75,99 @@ class AuthService {
     required String gender,
   }) async {
     try {
-      final credential = PhoneAuthProvider.credential(
-          verificationId: verificationId, smsCode: smsCode);
+      // Create a PhoneAuthCredential with the provided OTP
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
 
+      // Sign in with the credential
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
       User? user = userCredential.user;
 
+      // Storing additional user data in Firestore
       if (user != null) {
         await _fireStore.collection('users').doc(username).set({
           'uid': user.uid,
           'username': username,
+          'phoneNumber': user.phoneNumber,
           'fullName': fullName,
           'gender': gender,
-          'phoneNumber': user.phoneNumber,
           'createdAt': FieldValue.serverTimestamp(),
         });
       }
       return user;
     } catch (e) {
-      throw Exception('Failed to verify OTP: $e');
+      throw Exception(
+          'Failed to verify OTP and create account: ${e.toString()}');
     }
   }
+
+  // // Sign up with Phone Number
+  // Future<void> signUpWithPhoneNumber({
+  //   required String phoneNumber,
+  //   required String username,
+  //   required String fullName,
+  //   required String gender,
+  //   required Function(String verificationId) onCodeSent,
+  // }) async {
+  //   try {
+  //     bool usernameExists = await checkUsernameExists(username);
+  //     if (usernameExists) {
+  //       throw Exception('Username already taken.');
+  //     }
+  //
+  //     await _auth.verifyPhoneNumber(
+  //       phoneNumber: phoneNumber,
+  //       verificationCompleted: (PhoneAuthCredential credential) async {
+  //         // Auto-sign in for Android devices
+  //         await _auth.signInWithCredential(credential);
+  //       },
+  //       verificationFailed: (FirebaseAuthException e) {
+  //         throw Exception('Verification failed: ${e.message}');
+  //       },
+  //       codeSent: (String verificationId, int? resendToken) {
+  //         onCodeSent(verificationId);
+  //       },
+  //       codeAutoRetrievalTimeout: (String verificationId) {},
+  //     );
+  //   } catch (e) {
+  //     throw Exception('Failed to sign up: $e');
+  //   }
+  // }
+
+  // // Verify OTP and create the account
+  // Future<User?> verifyOtpAndCreateAccount({
+  //   required String verificationId,
+  //   required String smsCode,
+  //   required String username,
+  //   required String fullName,
+  //   required String gender,
+  // }) async {
+  //   try {
+  //     final credential = PhoneAuthProvider.credential(
+  //         verificationId: verificationId, smsCode: smsCode);
+  //
+  //     UserCredential userCredential =
+  //         await _auth.signInWithCredential(credential);
+  //     User? user = userCredential.user;
+  //
+  //     if (user != null) {
+  //       await _fireStore.collection('users').doc(username).set({
+  //         'uid': user.uid,
+  //         'username': username,
+  //         'fullName': fullName,
+  //         'gender': gender,
+  //         'phoneNumber': user.phoneNumber,
+  //         'createdAt': FieldValue.serverTimestamp(),
+  //       });
+  //     }
+  //     return user;
+  //   } catch (e) {
+  //     throw Exception('Failed to verify OTP: $e');
+  //   }
+  // }
 
   //Sign up with Email and Password
   Future<User?> signUpWithEmailAndPassword({
