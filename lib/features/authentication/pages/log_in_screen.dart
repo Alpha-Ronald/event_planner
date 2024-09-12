@@ -94,10 +94,14 @@ class _LogInScreenState extends ConsumerState<LogInScreen> {
                               .signInWithUsernameOrEmail(input, password);
                           if (user != null) {
                             // Navigate to the next screen after successful login
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return LogInScreen(); //HomePage();
-                            }));
+                            if (!user.emailVerified) {
+                              _showVerificationDialog();
+                            } else {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return LogInScreen();
+                              }));
+                            }
                           }
                         } catch (error) {
                           // Show error message to the user
@@ -209,8 +213,7 @@ class _LogInScreenState extends ConsumerState<LogInScreen> {
           title: const Text("Forgot Password"),
           content: TextField(
             decoration: const InputDecoration(hintText: "Enter your email"),
-            controller:
-                _userNameOREmailController, // Assuming email is entered here
+            controller: _userNameOREmailController,
           ),
           actions: [
             TextButton(
