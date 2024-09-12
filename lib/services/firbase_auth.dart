@@ -104,71 +104,6 @@ class AuthService {
     }
   }
 
-  // // Sign up with Phone Number
-  // Future<void> signUpWithPhoneNumber({
-  //   required String phoneNumber,
-  //   required String username,
-  //   required String fullName,
-  //   required String gender,
-  //   required Function(String verificationId) onCodeSent,
-  // }) async {
-  //   try {
-  //     bool usernameExists = await checkUsernameExists(username);
-  //     if (usernameExists) {
-  //       throw Exception('Username already taken.');
-  //     }
-  //
-  //     await _auth.verifyPhoneNumber(
-  //       phoneNumber: phoneNumber,
-  //       verificationCompleted: (PhoneAuthCredential credential) async {
-  //         // Auto-sign in for Android devices
-  //         await _auth.signInWithCredential(credential);
-  //       },
-  //       verificationFailed: (FirebaseAuthException e) {
-  //         throw Exception('Verification failed: ${e.message}');
-  //       },
-  //       codeSent: (String verificationId, int? resendToken) {
-  //         onCodeSent(verificationId);
-  //       },
-  //       codeAutoRetrievalTimeout: (String verificationId) {},
-  //     );
-  //   } catch (e) {
-  //     throw Exception('Failed to sign up: $e');
-  //   }
-  // }
-
-  // // Verify OTP and create the account
-  // Future<User?> verifyOtpAndCreateAccount({
-  //   required String verificationId,
-  //   required String smsCode,
-  //   required String username,
-  //   required String fullName,
-  //   required String gender,
-  // }) async {
-  //   try {
-  //     final credential = PhoneAuthProvider.credential(
-  //         verificationId: verificationId, smsCode: smsCode);
-  //
-  //     UserCredential userCredential =
-  //         await _auth.signInWithCredential(credential);
-  //     User? user = userCredential.user;
-  //
-  //     if (user != null) {
-  //       await _fireStore.collection('users').doc(username).set({
-  //         'uid': user.uid,
-  //         'username': username,
-  //         'fullName': fullName,
-  //         'gender': gender,
-  //         'phoneNumber': user.phoneNumber,
-  //         'createdAt': FieldValue.serverTimestamp(),
-  //       });
-  //     }
-  //     return user;
-  //   } catch (e) {
-  //     throw Exception('Failed to verify OTP: $e');
-  //   }
-  // }
-
   //Sign up with Email and Password
   Future<User?> signUpWithEmailAndPassword({
     required String email,
@@ -237,28 +172,36 @@ class AuthService {
   }
 
   //Sign In with Email and Password
-  Future<User?> signInWithEmailAndPassword(
-      String email, String password) async {
+  Future<User?> signInWithUsernameOrEmail(String input, String password) async {
     try {
+      String? email = input;
+
+      // Check if input is an email
+      if (!_isValidEmail(input)) {
+        // If it's not an email, assume it's a username and query Firestore for the associated email
+        email = await _getEmailFromUsername(input);
+        if (email == null) {
+          throw Exception('No user found with this username.');
+        }
+      }
+
+      // Now sign in with email and password
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User? user = userCredential.user;
 
-      if (user != null) {
-        // Check if email is verified
-        if (!user.emailVerified) {
-          throw Exception('Please verify your email before logging in.');
-        }
+      if (user != null && !user.emailVerified) {
+        throw Exception('Please verify your email before logging in.');
       }
+
       return user;
     } catch (e) {
-      // throw Exception('Failed to sign in $e');
       String errorMessage;
 
       if (e is FirebaseAuthException) {
         switch (e.code) {
           case 'user-not-found':
-            errorMessage = 'No user found with this email.';
+            errorMessage = 'No user found with this email or username.';
             break;
           case 'wrong-password':
             errorMessage = 'Incorrect password.';
@@ -271,6 +214,58 @@ class AuthService {
       }
 
       throw errorMessage;
+    }
+  }
+
+  // Helper function to check if input is a valid email
+  bool _isValidEmail(String input) {
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    return emailRegex.hasMatch(input);
+  }
+
+  // Helper function to get the email associated with a username
+  Future<String?> _getEmailFromUsername(String username) async {
+    try {
+      final snapshot = await _fireStore
+          .collection('users')
+          .where('username', isEqualTo: username)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs.first['email'];
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception('Error fetching email for username: $e');
+    }
+  }
+
+  //send password reset email
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      print("Password reset email sent.");
+    } catch (error) {
+      print("Error sending password reset email: $error");
+      throw error;
+    }
+  }
+
+  //Send verification email
+  Future<void> resendVerificationEmail() async {
+    User? user = _auth.currentUser;
+    if (user != null && !user.emailVerified) {
+      try {
+        await user.sendEmailVerification();
+        print("Verification email sent.");
+      } catch (error) {
+        print("Error resending verification email: $error");
+        throw error;
+      }
+    } else {
+      print("User is either not logged in or already verified.");
     }
   }
 
@@ -302,3 +297,40 @@ class AuthService {
     await _auth.signOut();
   }
 }
+
+// Future<User?> signInWithEmailAndPassword(
+//     String email, String password) async {
+//   try {
+//     UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+//         email: email, password: password);
+//     User? user = userCredential.user;
+//
+//     if (user != null) {
+//       // Check if email is verified
+//       if (!user.emailVerified) {
+//         throw Exception('Please verify your email before logging in.');
+//       }
+//     }
+//     return user;
+//   } catch (e) {
+//     // throw Exception('Failed to sign in $e');
+//     String errorMessage;
+//
+//     if (e is FirebaseAuthException) {
+//       switch (e.code) {
+//         case 'user-not-found':
+//           errorMessage = 'No user found with this email.';
+//           break;
+//         case 'wrong-password':
+//           errorMessage = 'Incorrect password.';
+//           break;
+//         default:
+//           errorMessage = 'Failed to sign in. Please try again.';
+//       }
+//     } else {
+//       errorMessage = e.toString();
+//     }
+//
+//     throw errorMessage;
+//   }
+// }
