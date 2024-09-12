@@ -89,6 +89,7 @@ class _OtpVerificationState extends State<OtpVerification> {
   final AuthService _authService = AuthService();
 
   Future<void> _verifyOtp(BuildContext context) async {
+    //...
     final otp = _otpController.text.trim();
     if (otp.isEmpty || otp.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -179,9 +180,9 @@ class _OtpVerificationState extends State<OtpVerification> {
         _isLoading
             ? const CircularProgressIndicator()
             : ElevatedButton(
-                onPressed: () => _verifyOtp(context),
-                child: const Text('Verify OTP'),
-              ),
+          onPressed: () => _verifyOtp(context),
+          child: const Text('Verify OTP'),
+        ),
         ElevatedButton(
           onPressed: () {
             // Handle OTP Resend (Optional)
@@ -210,7 +211,7 @@ class EmailVerification extends StatelessWidget {
             style: TextStyle(
                 fontSize: titleStyle.fontSize,
                 color: Colors.red) //TextStyle(fontSize: 20),
-            ),
+        ),
         SizedBox(
           height: 20.h,
         ),

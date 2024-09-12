@@ -1,4 +1,5 @@
 import 'package:event_planner_app/features/authentication/pages/create_account_screen.dart';
+import 'package:event_planner_app/features/authentication/pages/log_in_screen.dart';
 import 'package:event_planner_app/features/home_page/pages/home_page_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,9 +16,7 @@ class SignUpOptions extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode =
-        ref
-            .watch(themeNotifierProvider)
-            .brightness == Brightness.dark;
+        ref.watch(themeNotifierProvider).brightness == Brightness.dark;
     return Scaffold(
       body: Center(
         child: Padding(
@@ -95,13 +94,13 @@ class SignUpOptions extends ConsumerWidget {
                 children: [
                   Expanded(
                       child: Divider(
-                        thickness: 1,
-                      )),
+                    thickness: 1,
+                  )),
                   Text('OR'),
                   Expanded(
                       child: Divider(
-                        thickness: 1,
-                      ))
+                    thickness: 1,
+                  ))
                 ],
               ),
               SizedBox(
@@ -113,7 +112,7 @@ class SignUpOptions extends ConsumerWidget {
                     //Temporary navigation to work on home page
                     Navigator.push(context, MaterialPageRoute(
                       builder: (context) {
-                        return HomePage();
+                        return LogInScreen(); //HomePage();
                       },
                     ));
                   },
